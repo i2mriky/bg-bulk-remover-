@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2mriky Cut Bulk — شيل الخلفية بالجملة</title>
+<meta name="description" content="أداة شخصية لإزالة خلفية الصور بالجملة، بتشتغل كلها جوه المتصفح من غير رفع ولا سيرفر، وبتحافظ على الأبعاد الأصلية بالكامل.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=3">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='50' height='50' fill='%23e8e6e1'/><rect x='50' y='50' width='50' height='50' fill='%23e8e6e1'/><rect x='50' width='50' height='50' fill='%23a8a49c'/><rect y='50' width='50' height='50' fill='%23a8a49c'/></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <div class="brand-text">
+      <strong>2mriky Cut Bulk</strong>
+      <span>شيل الخلفية بالجملة — كله جوّه المتصفح</span>
+    </div>
+  </div>
+  <div class="engine" id="engineBadge" title="محرك المعالجة">
+    <span class="dot" id="engineDot"></span>
+    <span id="engineLabel">بيجهّز…</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ==== شريط الثقة ==== -->
+  <ul class="assurances">
+    <li><b>0</b> رفع للسيرفر — الصور مش بتسيب جهازك</li>
+    <li><b>0</b> ضغط — الخرج بنفس أبعاد الأصل بالظبط</li>
+    <li><b>∞</b> عدد الصور — مفيش اشتراك ولا كريديت</li>
+  </ul>
+
+  <!-- ==== منطقة الرفع ==== -->
+  <section class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="ارفع صور">
+    <svg class="dz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5-5 5 5"/><path d="M12 5v13"/>
+    </svg>
+    <h2>اسحب الصور هنا</h2>
+    <p>أو <button type="button" class="linkbtn" id="pickBtn">اختار من الجهاز</button> — تقدر كمان تعمل لصق <kbd>Ctrl</kbd>+<kbd>V</kbd></p>
+    <small>PNG · JPG · WEBP · AVIF — من غير حد أقصى للعدد</small>
+    <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/avif" multiple hidden>
+  </section>
+
+  <!-- ==== الإعدادات ==== -->
+  <section class="panel settings" id="settings">
+    <div class="panel-head">
+      <h3>إعدادات الخرج</h3>
+      <button type="button" class="ghost sm" id="resetSettings">رجّع الافتراضي</button>
+    </div>
+
+    <div class="grid">
+      <label class="field">
+        <span class="lbl">صيغة الحفظ</span>
+        <select id="fmt">
+          <option value="image/png" selected>PNG — بدون فقد نهائيًا (الأأمن)</option>
+          <option value="image/webp-lossless">WebP Lossless — نفس الجودة، حجم أصغر ٥٠٪</option>
+          <option value="image/webp">WebP جودة عالية — أخف كتير (فقد بسيط)</option>
+        </select>
+        <small class="hint" id="fmtHint">PNG بيحفظ كل بكسل زي ما هو + الشفافية.</small>
+      </label>
+
+      <label class="field">
+        <span class="lbl">الخلفية بعد الشيل</span>
+        <select id="bgMode">
+          <option value="transparent" selected>شفافة</option>
+          <option value="#ffffff">أبيض</option>
+          <option value="#000000">أسود</option>
+          <option value="custom">لون مخصص…</option>
+        </select>
+        <input type="color" id="bgColor" value="#ffffff" hidden style="display:none">
+        <small class="hint">الشفافة بتشتغل مع PNG و WebP بس.</small>
+      </label>
+
+      <label class="field">
+        <span class="lbl">حدّة الحواف <output id="edgeOut">متوسطة</output></span>
+        <input type="range" id="edge" min="0" max="100" value="35">
+        <small class="hint">قليل = شعر وفرو ناعم. كتير = حواف قاطعة لمنتجات ولوجوهات.</small>
+      </label>
+
+      <label class="field">
+        <span class="lbl">جودة القص</span>
+        <select id="model">
+          <option value="briaai/RMBG-1.4" selected>RMBG 1.4 — متوازن (≈44MB)</option>
+          <option value="Xenova/modnet">MODNet — أحسن للبورتريه والشعر</option>
+        </select>
+        <small class="hint">الموديل بيتحمّل مرة واحدة وبعدين بيتكاش في المتصفح.</small>
+      </label>
+    </div>
+
+    <p class="note">
+      <b>مهم:</b> الموديل بيحسب الماسك على مقاس داخلي ثابت (1024px) وبعدين الماسك بيتكبّر
+      ويتركّب على <b>الصورة الأصلية بأبعادها الكاملة</b> — يعني الريزوليوشن بتاعك مش بيتلمس خالص.
+    </p>
+  </section>
+
+  <!-- ==== شريط التحكم ==== -->
+  <section class="actionbar" id="actionbar" hidden style="display:none">
+    <div class="stats">
+      <span id="statCount">0 صورة</span>
+      <span class="sep">·</span>
+      <span id="statDone">0 خلصت</span>
+      <span class="sep">·</span>
+      <span id="statSize">—</span>
+    </div>
+    <div class="actions">
+      <button type="button" class="ghost" id="clearBtn">امسح الكل</button>
+      <button type="button" class="ghost" id="zipBtn" disabled>نزّل الكل ZIP</button>
+      <button type="button" class="primary" id="runBtn">ابدأ المعالجة</button>
+    </div>
+  </section>
+
+  <div class="progressbar" id="progressWrap" hidden style="display:none">
+    <div class="progressbar-fill" id="progressFill"></div>
+    <span class="progressbar-label" id="progressLabel"></span>
+  </div>
+
+  <!-- ==== الجاليري ==== -->
+  <section class="gallery" id="gallery" aria-live="polite"></section>
+
+  <p class="footnote">
+    شغّال 100% محليًا على جهازك عن طريق <code>transformers.js</code> + ONNX Runtime Web.
+    أول تشغيل بس محتاج نت عشان ينزّل الموديل.
+  </p>
+</main>
+
+<!-- ==== مودال المقارنة ==== -->
+<div class="modal" id="modal" hidden style="display:none">
+  <div class="modal-inner">
+    <button type="button" class="modal-close" id="modalClose" aria-label="اقفل">&times;</button>
+    <div class="compare" id="compare">
+      <img id="cmpAfter" alt="بعد شيل الخلفية">
+      <div class="compare-before" id="cmpBeforeWrap"><img id="cmpBefore" alt="الأصل"></div>
+      <div class="compare-handle" id="cmpHandle"><span></span></div>
+    </div>
+    <div class="modal-meta" id="modalMeta"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="module" src="app.js?v=3"></script>
+</body>
+</html>
